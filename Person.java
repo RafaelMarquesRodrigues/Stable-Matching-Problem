@@ -25,6 +25,10 @@ public class Person implements PersonInterface{
 		rank.add(p);
 	}
 
+	public LinkedList<Person> getList(){
+		return rank;
+	}
+
 	public int getRank(Person p){
 		return rank.indexOf(p); 
 	}

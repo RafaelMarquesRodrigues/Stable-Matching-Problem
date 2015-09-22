@@ -5,48 +5,38 @@ import java.util.stream.*;
 
 
 public class StableMatching {
-	private BufferedReader br;
 	private int size;
 
 	public static void main(String[] args) {
+		if(args.length < 1){
+			System.out.println("Number of couples required [0 - 10]");
+			return;
+		}
+
 		StableMatching s = new StableMatching();
- 		s.start();
+ 		s.start(Integer.parseInt(args[0]));
  	}
 
- 	private void start(){
- 		try{
- 			br = new BufferedReader(new FileReader("ranks.in"));
- 			size = Integer.parseInt(br.readLine());
- 			String names[] = new String[size * 2];
- 			LinkedList<Man> men = new LinkedList<Man>();
- 			LinkedList<Woman> women = new LinkedList<Woman>();
+ 	private void start(int size){
+ 		this.size = size;
+		String names[] = new String[size * 2];
+		LinkedList<Man> men = new LinkedList<Man>();
+		LinkedList<Woman> women = new LinkedList<Woman>();
 
- 			for(int i = 0; i < size * 2; i++)
- 				names[i] = br.readLine();
- 			
- 			for(int i = 0; i < size; i++){
- 				men.add(new Man(names[i]));
- 				women.add(new Woman(names[i + size]));
- 			}
+		GenerateCouples g = new GenerateCouples(size);
+		g.createRanks(men, women);
 
- 			initializeRanks(men, women);
- 			initializeRanks(women, men);
+		printRanks(women);
+		printRanks(men);
 
- 			printRanks(women);
- 			printRanks(men);
+		select(men, women);
 
- 			select(men, women);
-
- 			printPartners(men);
- 		}
- 		catch(IOException e){
- 			System.out.println("error reading file");
- 		}
+		printPartners(men);
  	}
 
  	private void select(LinkedList<Man> men, LinkedList<Woman> women){
 
- 		while(notAllMenProposedToAllWomen(men) && !allMatched(men)){
+ 		while(!allMatched(men)){
  			Man m = getMan(men);
 
  			for(Woman w : women){
@@ -104,23 +94,6 @@ public class StableMatching {
  	public void printPartners(LinkedList<? extends Person> persons){
  		for(Person p : persons)
  			System.out.println(p.getName() + " " + p.getPartner().getName());
- 	}
-
- 	private void initializeRanks(LinkedList<? extends Person> person, LinkedList<? extends Person> other) throws IOException {
- 		for(Person p : person){
- 			String str = br.readLine();
- 			String parts[] = str.split(" ");
-
- 			for(int i = 1; i <= size; i++)
- 				findPerson(person, parts[0]).addToRank(findPerson(other, parts[i]));
- 		}
- 	}
-
- 	private Person findPerson(LinkedList<? extends Person> person, String name){
- 		return person.stream()
- 			.filter(p -> p.getName().equals(name))
- 			.findFirst()
- 			.orElse(null);
  	}
 
  	private void printRanks(LinkedList<? extends Person> p){
